@@ -60,6 +60,7 @@ public class BioFactoryBE extends BaseMachineBE implements PoweredMachineBE, Red
     public static final int INPUT_SLOTS = 3;
     public static final int TOTAL_SLOTS = TERTIARY_INPUT_SLOT + 1;
     public static final int UPGRADE_SLOTS = 8;
+    private static final int GLOBAL_WORK_RATE_MULTIPLIER = 5;
 
     private final MachineEnergyStorage energyStorage = new MachineEnergyStorage(getMaxEnergy());
     private final PoweredMachineContainerData poweredData = new PoweredMachineContainerData(this);
@@ -176,8 +177,11 @@ public class BioFactoryBE extends BaseMachineBE implements PoweredMachineBE, Red
     private final ItemStack[] cachedInputs = new ItemStack[INPUT_SLOTS];
     private int[] cachedRecipeInputSlots;
     private Fluid cachedProcessFluid;
+    private ItemStack cachedBeeFood = ItemStack.EMPTY;
     private boolean cachedBeeUsesItemFood;
     private boolean cacheResolved;
+    private long activeOutputSlotsTick = Long.MIN_VALUE;
+    private int cachedActiveOutputSlots = BASE_OUTPUT_SLOTS;
 
     public BioFactoryBE(BlockPos pos, BlockState state) {
         super(JDTEBlockEntities.BIO_FACTORY.get(), pos, state);
@@ -189,7 +193,7 @@ public class BioFactoryBE extends BaseMachineBE implements PoweredMachineBE, Red
 
     @Override public void tickServer() {
         super.tickServer();
-        syncCapacities();
+        if (level != null && level.getGameTime() % 20L == 0L) syncCapacities();
         if (!isActiveRedstone() || !canRun() || !resolveRecipe()
                 || cachedBee != null && !ProductiveBeesBioFactoryIntegration.canOperate(level, cachedBee)) {
             resetProgress();
@@ -240,8 +244,10 @@ public class BioFactoryBE extends BaseMachineBE implements PoweredMachineBE, Red
         if (cachedBee == null) return false;
         ItemStack bucket = processFluidTank.isEmpty() ? ItemStack.EMPTY
                 : new ItemStack(processFluidTank.getFluid().getFluid().getBucket());
-        cachedBeeUsesItemFood = inputs.stream().anyMatch(stack ->
-                ProductiveBeesBioFactoryIntegration.isValidFood(cachedBee, stack, ItemStack.EMPTY));
+        cachedBeeFood = inputs.stream()
+                .filter(stack -> ProductiveBeesBioFactoryIntegration.isValidFood(cachedBee, stack, ItemStack.EMPTY))
+                .findFirst().map(ItemStack::copy).orElse(ItemStack.EMPTY);
+        cachedBeeUsesItemFood = !cachedBeeFood.isEmpty();
         if (!cachedBeeUsesItemFood && !ProductiveBeesBioFactoryIntegration.isValidFood(cachedBee, ItemStack.EMPTY, bucket)) {
             cachedBee = null;
         }
@@ -314,7 +320,8 @@ public class BioFactoryBE extends BaseMachineBE implements PoweredMachineBE, Red
             return result;
         }
         boolean blockOutput = upgradeHandler.countProductivityTier(4) > 0;
-        return ProductiveBeesBioFactoryIntegration.produce(level, cachedBee, blockOutput, multiplier).stream()
+        return ProductiveBeesBioFactoryIntegration.produce(
+                        level, cachedBee, cachedBeeFood, worldPosition, blockOutput, multiplier).stream()
                 .filter(stack -> !stack.isEmpty()).map(ItemStack::copy).toList();
     }
 
@@ -389,11 +396,15 @@ public class BioFactoryBE extends BaseMachineBE implements PoweredMachineBE, Red
     }
 
     private int getSpeedMultiplier() {
-        int timeCost = getEffectiveTimeFluidCost();
-        if (UpgradeHelper.hasCreativeUpgrade(this) || timeFluidTank.getFluidAmount() >= timeCost) {
-            return getMultiplier();
-        }
-        return 1;
+        boolean creative = UpgradeHelper.countUpgrades(this, UpgradeType.CREATIVE) > 0;
+        boolean overclocked = creative || UpgradeHelper.countUpgrades(this, UpgradeType.OVERCLOCK) > 0;
+        int selectedMultiplier = overclocked
+                ? JDTEConfig.COMMON.bioFactoryOverclockMaxSpeedMultiplier.get()
+                : Math.clamp(multiplier, 1, JDTEConfig.COMMON.bioFactoryMaxSpeedMultiplier.get());
+        int acceleratedMultiplier = creative || timeFluidTank.getFluidAmount() >= getEffectiveTimeFluidCost()
+                ? selectedMultiplier
+                : 1;
+        return Math.multiplyExact(acceleratedMultiplier, GLOBAL_WORK_RATE_MULTIPLIER);
     }
 
     private int getEffectiveTimeFluidCost() {
@@ -477,6 +488,7 @@ public class BioFactoryBE extends BaseMachineBE implements PoweredMachineBE, Red
         Arrays.fill(cachedInputs, ItemStack.EMPTY);
         cachedRecipeInputSlots = null;
         cachedProcessFluid = null;
+        cachedBeeFood = ItemStack.EMPTY;
         cachedBeeUsesItemFood = false;
     }
 
@@ -517,12 +529,17 @@ public class BioFactoryBE extends BaseMachineBE implements PoweredMachineBE, Red
 
     public int getActiveOutputSlots() {
         if (level != null && level.isClientSide) return Math.max(BASE_OUTPUT_SLOTS, syncedOutputSlots);
+        long gameTick = level == null ? Long.MIN_VALUE : level.getGameTime();
+        if (activeOutputSlotsTick == gameTick) return cachedActiveOutputSlots;
+
         int configured = BASE_OUTPUT_SLOTS + UpgradeHelper.countUpgrades(this, UpgradeType.CAPACITY) * OUTPUT_SLOTS_PER_CAPACITY;
         int occupied = BASE_OUTPUT_SLOTS;
         for (int i = 0; i < OUTPUT_SLOTS; i++) {
             if (!itemHandler.getStackInSlot(OUTPUT_START_SLOT + i).isEmpty()) occupied = ((i / 8) + 1) * 8;
         }
-        return Math.min(OUTPUT_SLOTS, Math.max(configured, occupied));
+        cachedActiveOutputSlots = Math.min(OUTPUT_SLOTS, Math.max(configured, occupied));
+        activeOutputSlotsTick = gameTick;
+        return cachedActiveOutputSlots;
     }
 
     public int getMaxFluidCapacity() {

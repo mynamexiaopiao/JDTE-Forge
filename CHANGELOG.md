@@ -2,7 +2,23 @@
 
 ### English
 
-#### v0.5.5 (Current)
+#### v0.5.6 (Current)
+
+- **New**: Added the 3×3×2 Life Synthesis Vat with plant, protein, and enriched recipe tiers for producing Life Fluid.
+- **New**: Added the 3×3×2 Large Greenhouse, which operates nine times faster than the Greenhouse.
+- **New**: Added the optional Productive Bees Life Fluid Bee production chain.
+- **New**: Greenhouses now natively support Botany Pots crop discovery and per-cycle randomized drop generation.
+- **Performance**: Improved Greenhouse performance under acceleration.
+- **Changed**: Capacity Upgrades now increase Greenhouse output-slot stack limits.
+- **Changed**: Simplified some machine guide and tooltip descriptions.
+- **Changed**: Updated several item models and textures.
+- **Removed**: Removed the Time Accelerator MSPT pause logic and target MSPT configuration; load is now controlled by fixed execution and scan budgets.
+- **Fixed**: Extended Block Breakers can now use machine energy to charge their tools.
+- **Fixed**: Bio Crushers now correctly complete Ender Dragon kills and combat state handling.
+- **Fixed**: Bio Factories now preserve gene NBT stored in bee cages.
+- **Fixed**: Bio Factories are now compatible with bee extraction from Productive Bees.
+
+#### v0.5.5
 
 - **New**: Added the Crystal Incubator with adjustable 1-512x growth acceleration or 1024x with Overclock/Creative, automatic nine-slot harvesting, eight upgrade slots, Fortune VIII, and broad budding-block support for vanilla, JDT, AE2, Data Energistics, AE2 add-ons, and Just Dyna Things.
 - **New**: Added the Crystal Incubator-only Precision Upgrade, which applies vanilla Silk Touch behavior and conflicts with Fortune Upgrades.
@@ -13,7 +29,7 @@
 - **Life Extractor**: Health above 100 now uses configurable marginal yield decay for each additional 100-health band, defaulting to a 10% reduction per band while preserving continuous total output at boundaries.
 - **New**: Added the Factory Packer and portable Factory Packages for transactional area relocation. UUID-backed compressed world records preserve blocks, populated block entities, non-player entity trees, and scheduled block/fluid ticks. Packages provide a cached actual-block model preview, right-click anchoring, Alt-scroll horizontal rotation, internal absolute-coordinate remapping, public AE2 move strategies, bounded rollback/restart recovery, and asynchronous I/O.
 - **Factory Packer**: Increased the configurable base X/Y/Z radius from 5 to 10; Range Upgrades now extend it from that larger baseline. New defaults allow 128 blocks per axis and a 1,000,000-block selected volume.
-- **Time Accelerators**: Reworked all three tiers around a shared managed scheduler with additive overlap, chunk-based target discovery, retained virtual ticks, configurable MSPT headroom, and public AE2 `IGridTickable` acceleration. Basic runs at 16x/32x, Advanced at up to 64x/128x, and Extended at up to 512x/1024x, with fixed 1x/2x/5x Time Fluid cost tiers.
+- **Time Accelerators**: Reworked all three tiers around a shared managed scheduler with additive overlap, chunk-based target discovery, retained virtual ticks, fixed per-tick execution and scan budgets that do not pause under high MSPT, and public AE2 `IGridTickable` acceleration. Basic runs at 16x/32x, Advanced at up to 64x/128x, and Extended at up to 512x/1024x, with fixed 1x/2x/5x Time Fluid cost tiers.
 - **Crystal Incubator**: Ordinary budding blocks use bounded AE2 Growth Accelerator-style forced random ticks, while resource-consuming Just Dyna Things targets receive their exact required FE and Time Fluid. Separate caches and round-robin budgets keep mixed target areas fair and low-overhead.
 - **Greenhouse**: Supports 1-32x or 64x operation, mature-block loot tables with primary products and byproducts, stack-density scaling, direct generation into adjacent inventories, automatic I/O, native four-direction connected models, and bounded batch processing.
 - **Bio Factory**: Productive Bees compatibility follows Advanced Beehive outputs, productivity and operation genes, all four Productivity Upgrade tiers, Omega comb-block output, and exact item/block/fluid/entity flowering rules. Entity-type bees such as Ribbeet accept component-correct Amber specimens, including inverse-tag semantics.
@@ -22,6 +38,7 @@
 - **Fixed**: Range previews now use their actual affected and offset areas for render culling, preventing large Entity Suppressor and Range Blocker previews from disappearing after world re-entry or when the machine block is outside the camera frustum.
 - **Fixed**: Added the missing Jade installed-upgrades config translation and corrected AE2 add-on acceleration paths that exposed maintenance-only block entity tickers.
 - **Fixed**: Restored configured-area execution and mutable target queues for Extended Block Breakers, Block Swappers, Fluid Collectors, Fluid Placers, and Sensors. Advanced Item Collectors now collect existing drops through bounded round-robin scans and bypass an ME Interface buffer only when it cannot accept the complete stack.
+- **Fixed**: Moved shared GUI slot-layout loading out of client-only code and read the packaged layout through the classpath, preventing dedicated-server crashes when opening Item Sender, Item Receiver, Greenhouse, or Loot Fabricator menus.
 - **Usability**: Completed Eclipse Alloy Wrench selections can now be resized one face at a time by looking at a boundary and using Ctrl-scroll, with one-block minimum dimensions and Create-style reversed controls from inside the selection.
 
 #### v0.5.4
@@ -134,7 +151,23 @@
 
 ### 中文
 
-#### v0.5.5（当前）
+#### v0.5.6(当前)
+
+- **新增**：加入 3×3×2 生命合成舱，提供植物、蛋白和富集三档配方，用于生产生命流体。
+- **新增**: 加入 3×3×2 大型温室大棚, 相较于温室大棚 9 倍工作速率。
+- **新增**: 加入可选的 Productive Bees 生命流体蜜蜂生产链。
+- **新增**: 温室大棚原生支持 Botany Pots 作物发现及逐次随机掉落生成。
+- **性能**: 优化温室大棚加速时性能。
+- **更改**: 容量升级放入温室大棚后可提高输出槽堆叠数量。
+- **更改**: 简化部分机器指南/tooltip描述。
+- **更改**: 更改部分物品模型和贴图。
+- **移除**：移除时间加速器按 MSPT 暂停的逻辑及目标 MSPT 配置，改由固定执行与扫描预算限制负载。
+- **修复**：扩展破坏器可用机器电量为工具充电；
+- **修复**：生物粉碎机可正确完成末影龙击杀与战斗状态；
+- **修复**：生物工厂会保留蜜蜂笼的基因 NBT。
+- **修复**：生物工厂兼容资源蜜蜂模组的抽蜂。
+
+#### v0.5.5
 
 - **新增**：加入水晶培育机，可调 1-512x 催生或通过超频/创造升级达到 1024x，支持 9 槽自动采收、8 个升级槽、时运 VIII，并通用兼容原版、JDT、AE2、Data Energistics、AE2 附属和 Just Dyna Things 母岩。
 - **新增**：加入水晶培育机专用精准升级，沿用原版精准采集逻辑，并与时运升级互斥。
@@ -145,7 +178,7 @@
 - **生命提取器**：超过 100 生命值后，每增加一个 100 点生命值区间都会应用可配置的边际产率衰减，默认每档降低 10%，同时保持档位边界处总产量连续增长。
 - **新增**：加入工厂打包机和便携工厂包裹，可事务化迁移范围内容。UUID 世界压缩记录会保留方块、含物品的方块实体、非玩家实体树及方块/流体计划 Tick；包裹支持缓存式真实方块模型预览、右键定位、Alt 滚轮水平旋转、内部绝对坐标重写、AE2 公开移动策略、有界回滚/重启续作及异步 I/O。
 - **工厂打包机**：可配置基础 X/Y/Z 半径由 5 提高到 10，范围升级从新的基础值继续扩展；单轴长度和范围体积的新默认上限分别提高到 128 格与 1,000,000 格。
-- **时间加速器**：三档加速器改用共享调度器，支持重叠倍率累加、按区块发现目标、保留虚拟 Tick、可配置 MSPT 余量及 AE2 `IGridTickable` 加速。初级为 16x/32x，高级最高 64x/128x，扩展最高 512x/1024x，时间流体成本固定为 1x/2x/5x 档位。
+- **时间加速器**：三档加速器改用共享调度器，支持重叠倍率累加、按区块发现目标、保留虚拟 Tick、不因 MSPT 过高暂停的每 tick 固定执行/扫描预算，以及 AE2 `IGridTickable` 加速。初级为 16x/32x，高级最高 64x/128x，扩展最高 512x/1024x，时间流体成本固定为 1x/2x/5x 档位。
 - **水晶培育机**：普通母岩使用有界的 AE2 晶体催生器式强制随机刻；Just Dyna Things 耗资源母岩会获得其实际所需的 FE 与时间流体。独立缓存与轮询预算保证混合范围公平运行并降低开销。
 - **温室大棚**：支持 1-32x 或 64x 运行、成熟方块掉落表主副产物、堆叠密度消耗、产物直接生成到相邻容器、自动 I/O、原生四方向连接模型和有界批量结算。
 - **生物工厂**：Productive Bees 兼容遵循高级蜂箱产出、产量与工作条件基因、四档产量升级、Omega 蜜脾块产出，以及精确物品/方块/流体/实体授粉规则。Ribbeet 等实体型蜜蜂可识别带正确组件的琥珀块，并支持反向实体标签。
@@ -154,6 +187,7 @@
 - **修复**：范围预览现在使用实际作用范围与偏移范围进行渲染裁剪，避免大型实体抑制器和范围屏蔽器的预览在重进世界后或机器方块位于视锥外时消失。
 - **修复**：补充 Jade 已安装升级配置翻译，并修正仅暴露维护型方块实体 Ticker 的 AE2 附属机器加速路径。
 - **修复**：恢复扩展高级方块破坏器、方块替换器、流体收集器、流体放置器和传感器的设定范围执行及可修改目标队列；高级物品拾取器新增有界轮询收集已有掉落物，并仅在 ME 接口缓冲无法完整接收时绕过缓冲直传网络。
+- **修复**：将共享 GUI 槽位布局加载从客户端专用代码迁移到共通代码，并通过 classpath 读取模组内置布局，修复专用服务器打开物品发送器、物品接收器、温室大棚或战利品制造机菜单时崩溃的问题。
 - **易用性**：完成双角点框选后，蚀空合金扳手可对准边界面使用 Ctrl+滚轮单独扩大或缩小该面，范围最小保持 1 格，并沿用 Create 在选区内部反转滚轮方向的交互。
 
 

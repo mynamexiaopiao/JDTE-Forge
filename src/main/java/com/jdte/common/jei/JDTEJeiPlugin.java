@@ -14,8 +14,12 @@ import com.jdte.common.jei.greenhouse.GreenhouseJeiRecipe;
 import com.jdte.common.jei.greenhouse.GreenhouseRecipeCategory;
 import com.jdte.common.jei.biofactory.BioFactoryJeiRecipe;
 import com.jdte.common.jei.biofactory.BioFactoryRecipeCategory;
+import com.jdte.common.jei.lifesynthesis.LifeSynthesisJeiRecipe;
+import com.jdte.common.jei.lifesynthesis.LifeSynthesisRecipeCategory;
 import com.jdte.client.screens.GreenhouseScreen;
+import com.jdte.client.screens.LargeGreenhouseScreen;
 import com.jdte.client.screens.BioFactoryScreen;
+import com.jdte.client.screens.LifeSynthesisScreen;
 import com.direwolf20.justdirethings.client.screens.basescreens.BaseMachineScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -53,7 +57,8 @@ public class JDTEJeiPlugin implements IModPlugin {
                 new PotionBrewerRecipeCategory(guiHelper),
                 new LootFabricatorRecipeCategory(guiHelper),
                 new GreenhouseRecipeCategory(guiHelper),
-                new BioFactoryRecipeCategory(guiHelper)
+                new BioFactoryRecipeCategory(guiHelper),
+                new LifeSynthesisRecipeCategory(guiHelper)
         );
     }
 
@@ -63,6 +68,7 @@ public class JDTEJeiPlugin implements IModPlugin {
         registration.addRecipes(PotionBrewerRecipeCategory.RECIPE_TYPE, PotionBrewerJeiRecipe.getRecipes());
         registration.addRecipes(GreenhouseRecipeCategory.RECIPE_TYPE, GreenhouseJeiRecipe.getRecipes());
         registration.addRecipes(BioFactoryRecipeCategory.RECIPE_TYPE, BioFactoryJeiRecipe.getRecipes());
+        registration.addRecipes(LifeSynthesisRecipeCategory.RECIPE_TYPE, LifeSynthesisJeiRecipe.getRecipes());
         java.util.List<LootFabricatorJeiRecipe> lootFabricatorRecipes = LootFabricatorJeiRecipe.getRecipes();
         registration.addRecipes(LootFabricatorRecipeCategory.RECIPE_TYPE, lootFabricatorRecipes);
         visibleLootFabricatorRecipes = lootFabricatorRecipes;
@@ -92,14 +98,18 @@ public class JDTEJeiPlugin implements IModPlugin {
             registration.addRecipeCatalyst(machine, LootFabricatorRecipeCategory.RECIPE_TYPE);
         }
         registration.addRecipeCatalyst(new ItemStack(JDTEItems.GREENHOUSE.get()), GreenhouseRecipeCategory.RECIPE_TYPE);
+        registration.addRecipeCatalyst(new ItemStack(JDTEItems.LARGE_GREENHOUSE.get()), GreenhouseRecipeCategory.RECIPE_TYPE);
         registration.addRecipeCatalyst(new ItemStack(JDTEItems.BIO_FACTORY.get()), BioFactoryRecipeCategory.RECIPE_TYPE);
+        registration.addRecipeCatalyst(new ItemStack(JDTEItems.LIFE_SYNTHESIS_VAT.get()), LifeSynthesisRecipeCategory.RECIPE_TYPE);
     }
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addGenericGuiContainerHandler(BaseMachineScreen.class, new AutoIoConfigJeiGuiHandler());
         registration.addRecipeClickArea(GreenhouseScreen.class, 36, 7, 24, 18, GreenhouseRecipeCategory.RECIPE_TYPE);
+        registration.addRecipeClickArea(LargeGreenhouseScreen.class, 64, 7, 24, 18, GreenhouseRecipeCategory.RECIPE_TYPE);
         registration.addRecipeClickArea(BioFactoryScreen.class, 35, 6, 32, 12, BioFactoryRecipeCategory.RECIPE_TYPE);
+        registration.addRecipeClickArea(LifeSynthesisScreen.class, 112, 7, 28, 12, LifeSynthesisRecipeCategory.RECIPE_TYPE);
     }
 
     @Override

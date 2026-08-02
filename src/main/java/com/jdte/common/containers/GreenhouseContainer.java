@@ -1,7 +1,7 @@
 package com.jdte.common.containers;
 
 import com.direwolf20.justdirethings.common.containers.basecontainers.BaseMachineContainer;
-import com.jdte.client.utils.GuiUpgradeLayoutConfig;
+import com.jdte.common.utils.GuiUpgradeLayoutConfig;
 import com.jdte.common.blockentities.GreenhouseBE;
 import com.jdte.common.items.UpgradeCardItem;
 import com.jdte.common.recipes.GreenhouseCropResolver;
@@ -180,7 +180,7 @@ public class GreenhouseContainer extends BaseMachineContainer implements FilterP
         }
         @Override public int getMaxStackSize() { return isActiveSlot() ? getItemHandler().getSlotLimit(getSlotIndex()) : 0; }
         @Override public int getMaxStackSize(ItemStack stack) {
-            return isActiveSlot() ? Math.min(stack.getMaxStackSize(), getItemHandler().getSlotLimit(getSlotIndex())) : 0;
+            return isActiveSlot() ? getItemHandler().getSlotLimit(getSlotIndex()) : 0;
         }
         @Override public boolean mayPickup(Player player) {
             return isActiveSlot() && !getItemHandler().extractItem(getSlotIndex(), 1, true).isEmpty();

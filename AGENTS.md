@@ -8,7 +8,7 @@ JDT Extras (`jdte`) is a NeoForge extension for Just Dire Things (JDT). It adds 
 |----------|-------|
 | Mod ID | `jdte` |
 | Mod name | `JDT Extras` |
-| Current version | `0.5.5` |
+| Current version | `0.5.6` |
 | Minecraft | `1.21.1` |
 | NeoForge | `21.1.233+` |
 | Just Dire Things | `1.5.7+` |
@@ -24,9 +24,11 @@ Major features:
 - Entity Suppressor with entity-tick suppression, entity spawn/join blocking, entity and block entity rendering suppression, client particle suppression, and six entity target modes.
 - Range Blocker with six-target event-driven containment, projectile boundary protection, player-magnet suppression, and public-event positional sound suppression.
 - Crystal Incubator with generic budding-block discovery, Time Fluid growth acceleration, Fortune harvesting, and batched area caching.
-- Glass-framed Greenhouse with four client-rendered plants, four reusable stackable plant templates, paged output, bounded batch production, generic plant support, and public-API Mystical Agriculture/Agradditions support.
-- Blazegold-framed Bio Factory with cached client-only creature rendering, data-driven animal products, four isolated fluid routes, eight default outputs, and public-API Productive Bees cages, flowering rules, hive products, and Productivity Upgrades.
+- Original horizontally connectable Greenhouse with four reusable stackable plant templates, paged output, bounded batch production, generic plant support, and public-API Mystical Agriculture/Agradditions support.
+- Glass-framed 3×3×2 Large Greenhouse with one controller, 17 stateless structure parts, nine client-rendered plants, nine reusable stackable plant templates, and unified paged output.
+- Blazegold-framed Bio Factory with cached client-only creature rendering, data-driven animal products, four isolated fluid routes, eight default outputs, and public-API Productive Bees cages, flowering rules, hive products, Productivity Upgrades, and a non-self-breeding Life Fluid Bee production chain.
 - Life Breeder with three breeding/growth modes, 2x2 feed inputs, 4x2 collected-product outputs, direct biological-age advancement, standard `Animal` and Villager compatibility, spawn-egg entity filters, and bounded area processing.
+- Red-windowed 3×3×2 Life Synthesis Vat with one controller, 17 stateless structure parts, three data-driven recipe tiers, pending-queue backpressure, direct-neighbor distillation priority, Time Fluid doubling boost, and a client-rendered progress liquid column.
 - Factory Packer with UUID-backed portable packages, populated block entities, entity trees, scheduled ticks, horizontal rotation, internal-link remapping, cached actual-block previews, public AE2 move strategies, Logistics Networks node recovery, Mekanism fission-reactor quiescing and radioactive-transmitter preservation, dependent multiblock teardown handling, bounded live-source recapture, asynchronous compressed storage, rollback, restart recovery, and actionable blacklist reports.
 - Advanced and Extended Bio Crushers, Life Extractors, and Infusion Machines.
 - Advanced Potion Brewer with ordered six-step brewing, recipe locking, auto I/O, and JEI brewing chains.
@@ -66,7 +68,7 @@ The Productive Bees JEI bridge uses its public `AdvancedBeehiveRecipe` and Produ
 | FTB Ultimine | CurseForge `8231400` | Optional bulk wrench and Upgrade Card operations |
 | Mystical Agriculture | CurseForge `8344249` | Optional Greenhouse crop registry integration |
 | Mystical Agradditions | CurseForge `7802027` | Optional high-tier Greenhouse crop integration through the shared registry |
-| Productive Bees | CurseForge `8022994` | Optional Bio Factory bee cages, flowering validation, hive products, and Productivity Upgrades |
+| Productive Bees | CurseForge `8022994` | Optional Bio Factory bee cages, flowering validation, hive products, Productivity Upgrades, and Life Fluid Bee content |
 | Mekanism | `10.7.19.85` | Optional Factory Packer fission-reactor shutdown and radioactive transmitter-content preservation through public APIs |
 | Parchment | `2024.11.17` | Minecraft mappings |
 
@@ -159,7 +161,7 @@ Fortune and Precision are standard `UpgradeType` values restricted to supported 
 - Each upgrade slot has a stack limit of one.
 - `UpgradeItemStackHandler.isItemValid()` checks item type, machine compatibility, aggregate limits, and Overclock/Underclock conflicts.
 - `UpgradeHelper.getUpgradeHandler()` selects the standard or extended attachment through the `ExtendedUpgradeMachine` marker.
-- `GuiUpgradeLayoutConfig` reads `assets/jdte/gui_layout.json`; machine screens use fixed embedded panels instead of draggable upgrade popups.
+- Shared `GuiUpgradeLayoutConfig` reads the packaged `assets/jdte/gui_layout.json` through the classpath without client-only classes, so server menus and client screens use identical slot coordinates on dedicated servers. Machine screens use fixed embedded panels instead of draggable upgrade popups.
 
 ### Capacity and Cost
 
@@ -193,7 +195,7 @@ Core behavior:
 
 Advanced defaults include `BASE_ENERGY_CAPACITY = 200000`, `MAX_MULTIPLIER = 64`, and `OVERCLOCK_MULTIPLIER = 128`. FE cost derives from `Config.TIMEWAND_RF_COST`; fluid cost derives from `Config.TIMEWAND_FLUID_COST` and `JDTEConfig.COMMON.timeAcceleratorFluidCostMultiplier`, then applies fixed Basic/Advanced/Extended tier factors of 1x/2x/5x. The base fluid multiplier can be changed with `/jdte timeaccelerator fluidCostMultiplier <value>`.
 
-All three tiers use the shared `ExtendedTimeAccelerationManager`. Active accelerators submit work to a server-post-tick scheduler that discovers loaded block entities through chunk maps, sums overlapping multipliers without discarding contributions, rotates bounded target batches inside configurable MSPT headroom, and retains paid virtual ticks while their contributing accelerators remain active. Random-ticking targets use a periodically refreshed cache. Optional AE2 support resolves public in-world grid nodes and invokes their `IGridTickable` services without reflection or mixins. `TimeAcceleratorBE.accelerateArea()` remains as the fallback/reference implementation.
+All three tiers use the shared `ExtendedTimeAccelerationManager`. Active accelerators submit work to a server-post-tick scheduler that discovers loaded block entities through chunk maps, sums overlapping multipliers without discarding contributions, rotates bounded target batches under fixed per-tick execution and scan budgets, and retains paid virtual ticks while their contributing accelerators remain active. High server MSPT no longer pauses acceleration; excess work remains queued instead. Random-ticking targets use a periodically refreshed cache. Optional AE2 support resolves public in-world grid nodes and invokes their `IGridTickable` services without reflection or mixins. `TimeAcceleratorBE.accelerateArea()` remains as the fallback/reference implementation.
 
 ## Extended Machines
 
@@ -218,6 +220,10 @@ Rules:
 - Every required capability must be registered explicitly in `JDTE.registerCapabilities()`.
 - Add conversion targets to `ExtendedUpgradeItem.UPGRADE_MAP`.
 
+### Tiered machine families
+
+JDTE machine families (Item/Fluid Sender and Receiver, Fluid Stabilizer, Glue Activator, Gel Generator, Bio Crusher, Infusion Machine, Life Extractor) share a sunk-logic pattern: the Advanced/Extended tier bodies live in an abstract `Powered<Family>BE` middle class that composes `MachineEnergySupport` (`common/machines/`), and tier shells are ~14-line classes that pass their own `BlockEntityType`, energy constants, and (for Extended) the `ExtendedUpgradeMachine` marker. Containers sink `addMachineSlots`/`stillValid` into `<Family>ContainerBase` or `SimpleMachineContainer`; screens with real bodies use `<Family>ScreenBase`. Shell class names, constructor signatures, registrations, and NBT keys must stay unchanged for save and network compatibility. Note `BaseMachineContainer` calls `addMachineSlots()` from its constructor, so layout choices in container bases must come from overridden methods returning constants, not constructor-assigned fields.
+
 ## Automation Machines
 
 | Family | Tiers | Base block entity | Purpose |
@@ -233,9 +239,11 @@ Rules:
 | Entity Suppressor | Single eight-slot tier | `EntitySuppressorBE` | Suppresses entity ticks or client rendering, blocks entity creation, or disables particles in a filtered area |
 | Range Blocker | Single eight-slot tier | `RangeBlockerBE` | Contains six selectable entity categories, prevents player magnets, or suppresses positional sounds in a configured area |
 | Crystal Incubator | Single eight-slot tier | `CrystalIncubatorBE` | Accelerates tagged budding blocks with Time Fluid and FE, then Fortune- or Precision-harvests mature neighboring clusters |
-| Greenhouse | Single eight-slot tier | `GreenhouseBE` | Runs four stackable crop/flower/sapling templates at adjustable 1-32x or forced 64x with Overclock/Creative, samples or explicitly defines multi-output harvests, and generates new output directly into adjacent item handlers |
+| Greenhouse | Single eight-slot tier | `GreenhouseBE` | Runs four stackable crop/flower/sapling templates in the original horizontally connectable machine |
+| Large Greenhouse | Single eight-slot tier | `LargeGreenhouseBE` | Runs nine stackable plant templates in one 3×3×2 controller-owned structure with 17 stateless parts |
 | Bio Factory | Single eight-slot tier | `BioFactoryBE` | Produces animal or Productive Bees resources at adjustable 1-32x or 64x with Overclock/Creative from reusable specimens and food/flower inputs without spawning server entities |
 | Life Breeder | Single eight-slot tier | `LifeBreederBE` | Feeds compatible `Animal` or Villager pairs, advances baby age and adult breeding cooldowns, filters by spawn-egg entity type, and collects real item drops through bounded area batches |
+| Life Synthesis Vat | Single eight-slot tier | `LifeSynthesisVatBE` | Grows tissue from organic media and nutrient fluid, then distills Life Fluid with direct-neighbor export priority and a bounded pending queue |
 | Factory Packer | Single eight-slot tier | `FactoryPackerBE` | Transactionally relocates blocks, populated block entities, non-player entity trees, and scheduled ticks through portable UUID packages |
 | Bio Crusher | Advanced, Extended | `BioCrusherBE` | Produces mob loot and XP fluid, including spawner integration |
 | Life Extractor | Advanced, Extended | `LifeExtractorBE` | Converts target health into Life Fluid without normal drops |
@@ -247,11 +255,13 @@ Capability summary:
 
 - Time Accelerators expose fluid; Advanced and Extended variants also expose energy.
 - The Crystal Incubator exposes energy, Time Fluid input, and an extraction-only nine-slot item inventory; Auto I/O supports fluid input and item output.
-- The Greenhouse exposes energy, Time Fluid input, four plant-template insertion slots, and 16-64 extraction-only paged output slots; its renderer displays four cached plant states without real world crops. Harvest settlement prefers the last successful adjacent item handler and routes newly generated stacks there first. Only remainders use internal output slots, and bounded snapshots preflight both destinations without a per-tick inventory-transfer loop.
+- The Greenhouse controller exposes the original four plant-template inventory and keeps its horizontally connected placement behavior.
+- The Large Greenhouse controller independently exposes energy, Time Fluid input, nine plant-template insertion slots, and 16-64 extraction-only paged output slots. Its 17 stateless `LargeGreenhousePartBlock` instances forward interactions and capabilities only to `LargeGreenhouseBE`; the renderer displays nine cached plant states without real world crops.
 - The Bio Factory exposes energy, one specimen plus three unordered material inputs, 8-32 paged item outputs, isolated Life/Time/culture fluid inputs, and a product-fluid-only output through capabilities and absolute-side auto I/O. Its old output indices remain stable and 34-slot saves expand without moving stored items. Its renderer caches one reduced-scale non-world entity per specimen and never runs server AI; native horizontal multipart connections update only on placement or neighbor changes. Dynamic external recipes default to 10x Time Fluid and 5x Life Fluid costs. Productive Bees compatibility stays in optional integration classes and uses public cage, flowering, gene, config, and production APIs; exact flowering items/fluids replace breeding-food fallback, while `flowerBlock` and block-tag-first `flowerTag` semantics support addon-defined flowering blocks. `entity_types` flowering reads the Amber item's vanilla entity-data component, applies Productive Bees entity-tag/inverse-tag semantics, and generates component-correct Amber variants for JEI. Bee Productivity and operation-condition genes follow Advanced Beehive semantics, the four Productivity tiers share a four-card limit, Omega enables comb-block output, and JEI expands active Advanced Beehive recipe data without reflection. Built-in JDTE recipes accept up to four Looting Upgrades.
 - The Life Breeder exposes energy, Life Fluid input, four insertion-only feed inputs, and eight extraction-only collected-product outputs. It queries loaded entity sections at a configurable interval, advances `AgeableMob` age values directly, creates animal offspring through `Animal.spawnChildFromBreeding()`, and adapts Villagers through their public offspring API plus vanilla food values. Spawn-egg filters are fingerprint-cached and select entity types using the shared allowlist state. Life Fluid derives from skipped biological ticks with a configurable 10x default multiplier; standard breeding costs 3000 mB by default. Empty-resource/feed states and full outputs skip their scans, and only real work dirties the block entity. Overclock/Creative settles remaining age or cooldown immediately, while Creative removes costs.
+- The Life Synthesis Vat exposes energy, nine insertion-only media inputs, and a combined fluid capability: the nutrient tank only accepts the recipe-matched fluid, the Time Fluid tank only accepts Time Fluid, and the Life Fluid tank is extraction-only. Production resolves one cached recipe per input composition via `level.getRecipeManager()` with generation-based invalidation, accumulates `cultureWork` in configurable settlements (default 20 ticks) at `elapsed × baseWorkRate × speedMultiplier × (Time Fluid boost ? 2 : 1)`, and completes batches while FE, nutrient, and the pending queue allow. Distillation fills boundary neighbors in cached most-recent-success order first, then the internal Life Fluid tank. Media and nutrient are consumed even with Creative, but FE and Time Fluid costs are waived.
 - The Factory Packer exposes energy and one package slot. Empty packages capture; filled packages restore. Its configurable base X/Y/Z radius defaults to 10 and Range Upgrades extend it to 20/40. Package items carry UUID, dimensions, entity/block summaries, rotation, and an optional dimension-aware placement origin; compressed v2 records under `data/jdte_factory_packages` store blocks, complete block entity NBT, root entity trees, scheduled block/fluid ticks, and source transform metadata. Held packages request capped block positions plus runtime block-state IDs once by UUID and cache four rotated actual-model previews client-side; right-click anchors, sneaking use clears, and Alt-scroll rotates in 90-degree horizontal steps. Capture, source removal, destination validation, block/entity placement, tick restoration, rollback, lighting, and neighbor updates use configurable bounded budgets; disk access and preview reads use the I/O pool. Snapshot capture is side-effect free. Fully selected Mekanism fission reactors are validated and stopped through public APIs before an authoritative recapture; partial reactor selections are rejected and restored reactors remain inactive. Before a Mekanism transmitter block entity is removed, its public save-share path moves the network allocation into the transmitter's own saved buffer so radioactive chemical networks cannot disperse their remaining contents. Mekanism bounding blocks and Immersive Engineering parts changed by an already-cut multiblock owner are consumed as dependent teardown rather than triggering a destructive recapture loop. Other source topology changes retain configurable bounded recapture attempts plus post-cut empty-area verification. Horizontal rotation applies a direction-property fallback only when a block's native rotation leaves the property unchanged. Mekanism bounding-block `main` positions and transmitter connection arrays are transformed explicitly, and transient connection caches are omitted so MoreMachine interfaces and pipes rebuild normally. Integrated Dynamics multipart installation sides, target sides, and directional cable caches rotate with the package. After prepared data is persisted, saved entities are detached before bounded `BreakEvent` permission probes and supporting-block removal; denied probes restore prepared block entities and entities in reverse transactional order. Placement finalizes block neighbors, lighting, and a final client block-state broadcast before entities are inserted, allowing Fusion connected textures and multipart models to rebuild from the complete structure; scheduled ticks are restored only after entities succeed. Internal absolute positions are remapped only inside source bounds, while public `AreaAffectingBE` radius and offset data is rotated geometrically. AE2 uses public `BlockEntityMoveStrategies`; AE2 Crystal Science broadcasters run their public unload lifecycle and migrate frequency-band declarations; ExtendedAE Plus Wireless Transceivers detach their non-world links after their original frequency is snapshotted; Logistics Networks nodes derive their transformed attachment from their restored position before explicit network registration; other networks rebuild through standard block entity load and neighbor updates. Players, cross-dimension tickets, and private unknown global-manager state remain excluded.
-- `GreenhouseBlock` stores four horizontal connection properties. The world blockstate uses native multipart component models to hide shared walls, posts, and roof rails and to fill connected roof strips/corners. Connection flags update only during placement and horizontal neighbor-shape changes; the inventory model remains the complete standalone `greenhouse.json` model.
+- `LargeGreenhouseBlock` is the sole block entity in the 3x3x3 structure and occupies the front-center of the bottom layer. One placement atomically creates 26 `LargeGreenhousePartBlock` instances across a loaded, replaceable area. Parts encode horizontal position, depth, layer, and facing in blockstate, forward interaction and capabilities without storing machine state, and remove the complete structure without duplicate drops when any part is broken. The original `GreenhouseBlock` remains independently registered as `jdte:greenhouse`.
 - Extended JDT machines expose item and energy capabilities where supported.
 - Glue Activators expose items; powered tiers also expose energy.
 - Gel Generators, Bio Crushers, Infusion Machines, Potion Brewers, and Loot Fabricators expose energy, fluid, and item capabilities as appropriate.
@@ -274,7 +284,6 @@ Common/server mixins:
 | Mixin | Purpose |
 |-------|---------|
 | `BaseMachineBEMixin` | Upgrade attachments, capacity synchronization, and persistence |
-| `BaseMachineBEPopupMixin` | Legacy popup attachment data compatibility |
 | `BaseMachineBlockMixin` | Overclock extra execution and wrench behavior hooks |
 | `BaseMachineContainerMixin` | Injects standard upgrade slots into JDT menus |
 | `BaseMachineContainerFilterMixin` | Provides dynamic filter slots and pagination |
@@ -295,7 +304,6 @@ Client mixins:
 |-------|---------|
 | `BaseMachineScreenMixin` | Embedded upgrade panels, filter pages, auto I/O, fluid bars, and slot layout |
 | `BaseMachineScreenAccessor` | Exposes JDT base screen state to custom screens |
-| `ClickerT2ScreenMixin` | Fixes Advanced Clicker settings and embedded-panel layout |
 | `ScreenMixin`, `AbstractContainerScreenMixin` | Expose screen layout fields |
 | `SlotAccessor` | Repositions menu slots dynamically |
 | `ParticleEngineMixin` | Rejects particles at the final client particle-engine insertion point for Entity Suppressor areas |
@@ -309,7 +317,7 @@ Mixin conventions:
 - Do not explicitly extend the target class.
 - Mark custom fields and methods `@Unique` and prefix them with `jdte$`.
 - Prefer `@Shadow` for mapped target fields and verify names against the active JDT jar.
-- Use reflection or interface checks when a method is not declared on the target type.
+- Prefer `@Invoker`/`@Accessor` mixins (e.g. `AbstractContainerMenuInvoker`, `FilterBasicHandlerAccessor`) over reflection when a method or field is not declared on the target type.
 - Move GUI slots only when state or layout changes, not every frame.
 - Declare new GUI layout in `gui_layout.json` and verify upgrade panels, filter pagination, auto I/O, and JEI click areas together.
 
@@ -392,13 +400,14 @@ Recommended order:
 
 ### v0.5.5 (Current)
 
-- Reworked all Time Accelerators to use a shared managed stacking scheduler with retained virtual ticks, chunk-based target discovery, dynamic MSPT headroom, and AE2 `IGridTickable` support.
+- Reworked all Time Accelerators to use a shared managed stacking scheduler with retained virtual ticks, chunk-based target discovery, fixed per-tick execution and scan budgets without MSPT pausing, and AE2 `IGridTickable` support.
 - Balanced tier limits and Time Fluid costs: Basic runs at 16x or 32x with Overclock/Creative, Advanced is adjustable to 64x or runs at 128x with Overclock/Creative, Extended remains adjustable to 512x or runs at 1024x, and Basic/Advanced/Extended use 1x/2x/5x Time Fluid cost rates.
 - Added the Crystal Incubator with adjustable 1-512x or overclocked 1024x Time Fluid growth acceleration, nine-slot automatic mature-cluster harvesting, Fortune VIII, common/extension tags, batched caching, and public-API Just Dyna Things support.
 - Added Crystal Incubator FE usage, automatic item output, AE2 Growth Accelerator-style ordinary budding ticks with six equivalent accelerators at 8x, exact Dyna target FE/Time Fluid provisioning and target-side charging, and the mutually exclusive Precision Upgrade backed by vanilla Silk Touch loot behavior.
 - Added the Greenhouse with a transparent Eclipse Alloy frame and Shadowpulse Soil base, four client-rendered plants, four reusable stackable plant templates, 16-64 paged output slots, a former-512-work 1x baseline adjustable to 32x or overclocked 64x, fair bounded settlements, mature crop loot sampling, generic crops/flowers/saplings, Fortune III, JEI recipes, and public Crop Registry support for Mystical Agriculture and Mystical Agradditions.
 - Added the Blazegold-framed Bio Factory with reusable animal/bee specimens, food and culture inputs, independent Life/Time/product fluids, adjustable 1-32x or 64x Overclock/Creative speed, auto I/O, 8-32 paged item outputs, data and loaded Productive Bees JEI recipes, reduced cached client-only entity display, and Productivity Upgrade support.
 - Added the Life Breeder with standard-animal automatic feeding and mating, direct 1-32x baby/cooldown advancement, instant Overclock/Creative settlement, three operating modes, eight collected-product outputs, area/redstone/auto-I/O support, and bounded processing budgets.
+- Added the 3×3×2 Life Synthesis Vat with nine media inputs, three fluid tanks, generation-invalidated recipe caching, batched culture settlements, Time Fluid doubling boost, bounded pending queue, and direct-neighbor distillation priority.
 - Added the Factory Packer and portable UUID packages with asynchronous compressed storage, bounded transactional relocation of populated block entities/entities/scheduled ticks, cached structure previews, horizontal rotation, internal-link remapping, AE2 move strategies, rollback, and restart recovery.
 - Factory Package rotation now remaps AE2 cable-bus parts and facades by side and rotates public AE2 orientation and Pattern Provider push-direction state.
 - Factory Packer cutting now removes captured entities before supporting blocks, and package rotation transforms public `AreaAffectingBE` radius and offset data.
@@ -486,7 +495,7 @@ Config class: `src/main/java/com/jdte/setup/JDTEConfig.java`
 | Category | Path | Purpose |
 |----------|------|---------|
 | Upgrade system | `jdte.upgrades` | Filter slots, energy multipliers, tick speed, and area limits |
-| Time Accelerator | `jdte.timeAccelerator` | Fluid capacity, tier multipliers, energy/fluid costs, and shared scheduler MSPT, queue, batch, refresh, and AE2 controls |
+| Time Accelerator | `jdte.timeAccelerator` | Fluid capacity, tier multipliers, energy/fluid costs, and shared scheduler execution, scan, queue, batch, refresh, and AE2 controls |
 | Bio Crusher | `jdte.bioCrusher` | Fluid, energy, damage, range, output scaling, and integrations |
 | Life Extractor | `jdte.lifeExtractor` | Life Fluid capacity, health conversion, and batch size |
 | Loot Fabricator | `jdte.lootFabricator` | Processing costs, Boss multipliers, Looting copies, and compatibility loot |
@@ -498,6 +507,7 @@ Config class: `src/main/java/com/jdte/setup/JDTEConfig.java`
 | Greenhouse | `jdte.greenhouse` | FE/Time Fluid capacity, 1-32x/64x speed, 10 FE harvest cost, 100x fluid divisor, settlement interval, generic/Mystical costs, and batch cap |
 | Bio Factory | `jdte.bioFactory` | FE/fluid capacity, cycle timing, settlement interval, default/1-32x/64x Time Fluid speed, Life Fluid yield, and culture-fluid cost |
 | Life Breeder | `jdte.lifeBreeder` | FE/Life Fluid capacity and costs, biological-tick conversion, fluid multiplier, breeding cooldown basis, processing interval, entity/pair/growth/drop budgets, population guard, and 1-32x speed |
+| Life Synthesis Vat | `jdte.lifeSynthesisVat` | FE/fluid capacity, base culture work rate, default/1-32x/64x speed, settlement interval, Time Fluid cost per boosted batch, pending queue cap, and batch budget |
 | Factory Packer | `jdte.factoryPacker` | Base radius, FE block/entity costs, batch budget, source recapture retries, chat notifications, axis/volume/entity/preview limits, migration toggles, link remapping, mod move strategies, and compressed/uncompressed package limits |
 | Advanced Potion Brewer | `jdte.advancedPotionBrewer` | Optional rejection of adjacent AE2 crafting providers for Blaze Powder automation |
 | Gel Generator | `jdte.gelGenerator` | Slots, capacity, conversion, and fuel use |

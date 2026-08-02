@@ -1,12 +1,14 @@
 package com.jdte.setup;
 
 import com.jdte.JDTE;
+import com.jdte.common.integrations.ProductiveBeesBioFactoryIntegration;
 import com.jdte.setup.JDTEFluids;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -76,6 +78,8 @@ public class JDTECreativeTabs {
                 output.accept(JDTEItems.EXTENDED_ITEM_RECEIVER.get());
                 output.accept(JDTEItems.CRYSTAL_INCUBATOR.get());
                 output.accept(JDTEItems.GREENHOUSE.get());
+                output.accept(JDTEItems.LARGE_GREENHOUSE.get());
+                output.accept(JDTEItems.LIFE_SYNTHESIS_VAT.get());
                 output.accept(JDTEItems.BIO_FACTORY.get());
                 output.accept(JDTEItems.LIFE_BREEDER.get());
 
@@ -106,6 +110,10 @@ public class JDTECreativeTabs {
                 output.accept(JDTEItems.ENDER_DRAGON_SPAWN_EGG.get());
                 output.accept(JDTEItems.ENDER_DRAGON_ESSENCE.get());
                 output.accept(JDTEItems.ELDER_GUARDIAN_ESSENCE.get());
+
+                if (ModList.get().isLoaded("productivebees")) {
+                    ProductiveBeesBioFactoryIntegration.getLifeFluidBeeCreativeItems().forEach(output::accept);
+                }
             })
             .build());
 }
