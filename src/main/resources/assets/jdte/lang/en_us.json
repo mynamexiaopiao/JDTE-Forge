@@ -678,11 +678,15 @@
   "tooltip.jdte.ultimate_portal_gun.slots": "Teleport Slots: %s",
   "screen.jdte.ultimate_portal_gun.title": "Ultimate Portal Gun",
   "screen.jdte.ultimate_portal_gun.page": "Page %s/%s",
+  "screen.jdte.ultimate_portal_gun.prev_page": "Previous Page",
+  "screen.jdte.ultimate_portal_gun.next_page": "Next Page",
   "screen.jdte.ultimate_portal_gun.add_current": "Add Current",
   "screen.jdte.ultimate_portal_gun.add_manual": "Edit Teleport Slot",
   "screen.jdte.ultimate_portal_gun.edit": "Edit",
-  "screen.jdte.ultimate_portal_gun.dimension": "Dimension",
   "screen.jdte.ultimate_portal_gun.name": "Name",
+  "screen.jdte.ultimate_portal_gun.coords": "X Y Z",
+  "screen.jdte.ultimate_portal_gun.dimension": "Dimension: %s",
+  "screen.jdte.ultimate_portal_gun.no_dimensions": "No dimensions available",
   "screen.jdte.ultimate_portal_gun.delete": "Delete",
   "message.jdte.ultimate_portal_gun.dimension_missing": "The destination dimension is not loaded on this server."
 }

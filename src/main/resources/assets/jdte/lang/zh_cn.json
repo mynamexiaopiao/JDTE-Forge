@@ -678,11 +678,15 @@
   "tooltip.jdte.ultimate_portal_gun.slots": "传送槽位：%s",
   "screen.jdte.ultimate_portal_gun.title": "顶级传送枪",
   "screen.jdte.ultimate_portal_gun.page": "第 %s/%s 页",
+  "screen.jdte.ultimate_portal_gun.prev_page": "上一页",
+  "screen.jdte.ultimate_portal_gun.next_page": "下一页",
   "screen.jdte.ultimate_portal_gun.add_current": "添加当前位置",
   "screen.jdte.ultimate_portal_gun.add_manual": "编辑传送槽位",
   "screen.jdte.ultimate_portal_gun.edit": "编辑",
-  "screen.jdte.ultimate_portal_gun.dimension": "维度",
   "screen.jdte.ultimate_portal_gun.name": "名称",
+  "screen.jdte.ultimate_portal_gun.coords": "X Y Z",
+  "screen.jdte.ultimate_portal_gun.dimension": "维度：%s",
+  "screen.jdte.ultimate_portal_gun.no_dimensions": "没有可用维度",
   "screen.jdte.ultimate_portal_gun.delete": "删除",
   "message.jdte.ultimate_portal_gun.dimension_missing": "目标维度未在服务器加载。"
 }
