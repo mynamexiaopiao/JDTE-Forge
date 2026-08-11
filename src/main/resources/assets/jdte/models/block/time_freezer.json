@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "jdte:block/clock_side",
+    "down": "jdte:block/clock_bottom",
+    "up": "jdte:block/clock_top",
+    "north": "jdte:block/clock_side",
+    "east": "jdte:block/clock_side",
+    "south": "jdte:block/clock_side",
+    "west": "jdte:block/clock_side"
+  }
+}
