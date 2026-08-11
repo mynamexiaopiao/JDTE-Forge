@@ -8,6 +8,9 @@ public final class LootFabricatorLootSyncPacket {
     private LootFabricatorLootSyncPacket() { }
 
     public static void handle(LootFabricatorLootSyncPayload payload, PacketContext context) {
+        if (net.minecraftforge.api.distmarker.Dist.CLIENT != net.minecraftforge.fml.loading.FMLEnvironment.dist) {
+            return;
+        }
         context.enqueueWork(() -> LootFabricatorLootClientCache.set(payload.drops()));
     }
 }

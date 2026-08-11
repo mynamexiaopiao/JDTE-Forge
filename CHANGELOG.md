@@ -1,6 +1,14 @@
 # Changelog
 
-#### v0.5.8-forge-1.20.1
+#### v0.5.8-forge-1.20.1 (with 0.5.7 content)
+
+- **New**: Added the Mineral Survey, Mineral Extractor, and 3×3×2 Large Mineral Extractor (ported from the upstream 0.5.7 branch). Mineral sources are analyzed from datapack codecs and overridable through `jdte/mineral_sources` entries; the extractor supports Experience/Time Fluid costs, smelting upgrades, filtering, paged outputs, auto I/O, and coalesced production up to 64x.
+- **New**: Added the Advanced Energy Transmitter with eight upgrade slots, configurable 3D FE delivery, filtering, player binding, JDT-style rendering and controls, public-API Applied Flux ME energy extraction, and cross-dimensional charging for bound players' vanilla and Curios equipment.
+- **Refactor**: Generalized GreenhouseOutputManager into MachineOutputManager, which also coalesces Mineral Extractor paged-output flushes.
+- **Fixed**: Container/Clicker fluid transfers now return any amount not accepted by the destination; client-only loot and spawn-egg sync handlers are guarded on dedicated servers.
+- **Port**: Synchronized the 0.5.7 content from the NeoForge `lhy/v0.5.7` branch for the Forge 1.20.1 line.
+
+#### v0.5.8-forge-1.20.1 (previous)
 
 - **New**: Added Time Freezer FE support and independent time/weather freeze switches.
 - **New**: Added the Ultimate Portal Gun with 1000 B capacity, unlimited paged destinations, manual coordinate editing, and server-side dimension validation.

@@ -35,6 +35,10 @@ public class JDTEBlocks {
     public static final RegistryObject<BioFactoryBlock> BIO_FACTORY = BLOCKS.register("bio_factory", BioFactoryBlock::new);
     public static final RegistryObject<LifeBreederBlock> LIFE_BREEDER = BLOCKS.register("life_breeder", LifeBreederBlock::new);
     public static final RegistryObject<FactoryPackerBlock> FACTORY_PACKER = BLOCKS.register("factory_packer", FactoryPackerBlock::new);
+    public static final RegistryObject<MineralExtractorBlock> MINERAL_EXTRACTOR = BLOCKS.register("mineral_extractor", MineralExtractorBlock::new);
+    public static final RegistryObject<LargeMineralExtractorBlock> LARGE_MINERAL_EXTRACTOR = BLOCKS.register("large_mineral_extractor", LargeMineralExtractorBlock::new);
+    public static final RegistryObject<LargeMineralExtractorPartBlock> LARGE_MINERAL_EXTRACTOR_PART = BLOCKS.register("large_mineral_extractor_part", LargeMineralExtractorPartBlock::new);
+    public static final RegistryObject<AdvancedEnergyTransmitterBlock> ADVANCED_ENERGY_TRANSMITTER = BLOCKS.register("advanced_energy_transmitter", AdvancedEnergyTransmitterBlock::new);
 
     // Glue Activator
     public static final RegistryObject<BasicGlueActivatorBlock> BASIC_GLUE_ACTIVATOR = BLOCKS.register("basic_glue_activator", BasicGlueActivatorBlock::new);

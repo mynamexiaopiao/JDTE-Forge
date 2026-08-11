@@ -1,5 +1,6 @@
 package com.jdte.setup;
 
+import com.jdte.setup.config.AdvancedEnergyTransmitterConfig;
 import com.jdte.setup.config.AdvancedItemCollectorConfig;
 import com.jdte.setup.config.AdvancedPotionBrewerConfig;
 import com.jdte.setup.config.BioCrusherConfig;
@@ -14,6 +15,7 @@ import com.jdte.setup.config.LifeBreederConfig;
 import com.jdte.setup.config.LifeExtractorConfig;
 import com.jdte.setup.config.LifeSynthesisVatConfig;
 import com.jdte.setup.config.LootFabricatorConfig;
+import com.jdte.setup.config.MineralExtractorConfig;
 import com.jdte.setup.config.RangeBlockerConfig;
 import com.jdte.setup.config.SenderReceiverConfig;
 import com.jdte.setup.config.TimeAcceleratorConfig;
@@ -36,6 +38,22 @@ public class JDTEConfig {
 
     public static class Common {
         public final UpgradesConfig upgrades;
+        public final AdvancedEnergyTransmitterConfig advancedEnergyTransmitter;
+        public final ForgeConfigSpec.IntValue advancedEnergyTransmitterEnergyCapacity;
+        public final ForgeConfigSpec.IntValue advancedEnergyTransmitterBaseTickDelay;
+        public final ForgeConfigSpec.IntValue advancedEnergyTransmitterTargetRefreshInterval;
+        public final ForgeConfigSpec.IntValue advancedEnergyTransmitterScanBlocksPerTick;
+        public final ForgeConfigSpec.IntValue advancedEnergyTransmitterMaxTargetsPerTick;
+        public final ForgeConfigSpec.IntValue advancedEnergyTransmitterMaxTransferPerTarget;
+        public final ForgeConfigSpec.IntValue advancedEnergyTransmitterTransferBudgetPerTick;
+        public final ForgeConfigSpec.IntValue advancedEnergyTransmitterOverclockTransferMultiplier;
+        public final ForgeConfigSpec.IntValue advancedEnergyTransmitterMeExtractionLimitPerTick;
+        public final ForgeConfigSpec.BooleanValue advancedEnergyTransmitterExcludeTransmitters;
+        public final ForgeConfigSpec.BooleanValue advancedEnergyTransmitterShowParticlesByDefault;
+        public final ForgeConfigSpec.IntValue advancedEnergyTransmitterMaxParticleTargetsPerTick;
+        public final ForgeConfigSpec.IntValue advancedEnergyTransmitterPlayerChargeMaxItemsPerTick;
+        public final ForgeConfigSpec.IntValue advancedEnergyTransmitterPlayerChargeMaxCallsPerItem;
+
         public final TimeAcceleratorConfig timeAccelerator;
         public final TimeFreezerConfig timeFreezer;
         public final UltimatePortalGunConfig ultimatePortalGun;
@@ -52,6 +70,7 @@ public class JDTEConfig {
         public final GreenhouseConfig greenhouse;
         public final LifeSynthesisVatConfig lifeSynthesisVat;
         public final BioFactoryConfig bioFactory;
+        public final MineralExtractorConfig mineralExtractor;
         public final LifeBreederConfig lifeBreeder;
         public final GelGeneratorConfig gelGenerator;
         public final GeneratorUpgradeConfig generatorUpgrade;
@@ -270,6 +289,22 @@ public class JDTEConfig {
             builder.comment("JDT Extras Settings").translation("config.jdte.jdte").push("jdte");
 
             upgrades = new UpgradesConfig(builder);
+            advancedEnergyTransmitter = new AdvancedEnergyTransmitterConfig(builder);
+            this.advancedEnergyTransmitterEnergyCapacity = advancedEnergyTransmitter.energyCapacity;
+            this.advancedEnergyTransmitterBaseTickDelay = advancedEnergyTransmitter.baseTickDelay;
+            this.advancedEnergyTransmitterTargetRefreshInterval = advancedEnergyTransmitter.targetRefreshInterval;
+            this.advancedEnergyTransmitterScanBlocksPerTick = advancedEnergyTransmitter.scanBlocksPerTick;
+            this.advancedEnergyTransmitterMaxTargetsPerTick = advancedEnergyTransmitter.maxTargetsPerTick;
+            this.advancedEnergyTransmitterMaxTransferPerTarget = advancedEnergyTransmitter.maxTransferPerTarget;
+            this.advancedEnergyTransmitterTransferBudgetPerTick = advancedEnergyTransmitter.transferBudgetPerTick;
+            this.advancedEnergyTransmitterOverclockTransferMultiplier = advancedEnergyTransmitter.overclockTransferMultiplier;
+            this.advancedEnergyTransmitterMeExtractionLimitPerTick = advancedEnergyTransmitter.meExtractionLimitPerTick;
+            this.advancedEnergyTransmitterExcludeTransmitters = advancedEnergyTransmitter.excludeTransmitters;
+            this.advancedEnergyTransmitterShowParticlesByDefault = advancedEnergyTransmitter.showParticlesByDefault;
+            this.advancedEnergyTransmitterMaxParticleTargetsPerTick = advancedEnergyTransmitter.maxParticleTargetsPerTick;
+            this.advancedEnergyTransmitterPlayerChargeMaxItemsPerTick = advancedEnergyTransmitter.playerChargeMaxItemsPerTick;
+            this.advancedEnergyTransmitterPlayerChargeMaxCallsPerItem = advancedEnergyTransmitter.playerChargeMaxCallsPerItem;
+
             timeAccelerator = new TimeAcceleratorConfig(builder);
             timeFreezer = new TimeFreezerConfig(builder);
             ultimatePortalGun = new UltimatePortalGunConfig(builder);
@@ -286,6 +321,7 @@ public class JDTEConfig {
             greenhouse = new GreenhouseConfig(builder);
             lifeSynthesisVat = new LifeSynthesisVatConfig(builder);
             bioFactory = new BioFactoryConfig(builder);
+            mineralExtractor = new MineralExtractorConfig(builder);
             lifeBreeder = new LifeBreederConfig(builder);
             gelGenerator = new GelGeneratorConfig(builder);
             generatorUpgrade = new GeneratorUpgradeConfig(builder);

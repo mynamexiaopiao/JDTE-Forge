@@ -22,6 +22,8 @@ import com.jdte.common.blockentities.LifeSynthesisVatBE;
 import com.jdte.common.blockentities.RangeBlockerBE;
 import com.jdte.common.blockentities.FactoryPackerBE;
 import com.jdte.common.blockentities.TimeAcceleratorMachine;
+import com.jdte.common.blockentities.MineralExtractorBE;
+import com.jdte.common.blockentities.AdvancedEnergyTransmitterBE;
 import com.jdte.common.items.UpgradeCardItem;
 import com.jdte.mixin.EnergyStorageAccessor;
 import com.jdte.mixin.FluidTankAccessor;
@@ -54,7 +56,20 @@ public class UpgradeHelper {
     }
 
     public static boolean isUpgrade(ItemStack stack) {
-        return stack.getItem() instanceof UpgradeCardItem;
+        return stack.getItem() instanceof UpgradeCardItem || isSmelterUpgrade(stack);
+    }
+
+    public static boolean isSmelterUpgrade(ItemStack stack) {
+        return stack.is(com.direwolf20.justdirethings.setup.Registration.UPGRADE_SMELTER.get());
+    }
+
+    public static boolean hasSmelterUpgrade(BaseMachineBE machine) {
+        UpgradeItemStackHandler handler = getUpgradeHandler(machine);
+        if (handler == null) return false;
+        for (int slot = 0; slot < handler.getSlots(); slot++) {
+            if (isSmelterUpgrade(handler.getStackInSlot(slot))) return true;
+        }
+        return false;
     }
 
     public static boolean isUpgrade(ItemStack stack, UpgradeType type) {
@@ -70,6 +85,16 @@ public class UpgradeHelper {
         if (machine instanceof LifeSynthesisVatBE) {
             return type == UpgradeType.CAPACITY || type == UpgradeType.FLUID
                     || type == UpgradeType.OVERCLOCK || type == UpgradeType.CREATIVE;
+        }
+        if (machine instanceof MineralExtractorBE) {
+            return type == UpgradeType.CAPACITY || type == UpgradeType.FLUID
+                    || type == UpgradeType.OVERCLOCK || type == UpgradeType.FILTER
+                    || type == UpgradeType.CREATIVE;
+        }
+        if (machine instanceof AdvancedEnergyTransmitterBE) {
+            return type == UpgradeType.RANGE || type == UpgradeType.FILTER
+                    || type == UpgradeType.CAPACITY || type == UpgradeType.OVERCLOCK
+                    || type == UpgradeType.CREATIVE;
         }
         if (machine instanceof BioFactoryBE) {
             return type == UpgradeType.CAPACITY || type == UpgradeType.FLUID
@@ -223,7 +248,7 @@ public class UpgradeHelper {
     public static boolean usesLockedDelay(BaseMachineBE machine) {
         return !(machine instanceof TimeAcceleratorMachine) && !(machine instanceof GreenhouseBE || machine instanceof LargeGreenhouseBE)
                 && !(machine instanceof BioFactoryBE) && !(machine instanceof LifeBreederBE)
-                && !(machine instanceof LifeSynthesisVatBE);
+                && !(machine instanceof LifeSynthesisVatBE) && !(machine instanceof MineralExtractorBE);
     }
 
     public static boolean hasOverclock(BaseMachineBE machine) {
@@ -339,8 +364,17 @@ public class UpgradeHelper {
         }
 
         FluidStack extracted = tank.drain(insertAmount, IFluidHandler.FluidAction.EXECUTE);
-        if (!extracted.isEmpty()) {
-            itemFluidHandler.fill(extracted, IFluidHandler.FluidAction.EXECUTE);
+        if (extracted.isEmpty()) {
+            return;
+        }
+
+        int filled = itemFluidHandler.fill(extracted, IFluidHandler.FluidAction.EXECUTE);
+        if (filled < extracted.getAmount()) {
+            FluidStack remainder = extracted.copy();
+            remainder.setAmount(extracted.getAmount() - Math.max(0, filled));
+            tank.fill(remainder, IFluidHandler.FluidAction.EXECUTE);
+        }
+        if (filled > 0) {
             itemHandler.setStackInSlot(0, itemFluidHandler.getContainer());
             machine.setChanged();
         }

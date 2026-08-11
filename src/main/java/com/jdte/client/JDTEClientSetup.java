@@ -56,6 +56,9 @@ public class JDTEClientSetup {
         MenuScreens.register(JDTEMenus.ENTITY_SUPPRESSOR.get(), EntitySuppressorScreen::new);
         MenuScreens.register(JDTEMenus.RANGE_BLOCKER.get(), RangeBlockerScreen::new);
         MenuScreens.register(JDTEMenus.FACTORY_PACKER.get(), FactoryPackerScreen::new);
+        MenuScreens.register(JDTEMenus.MINERAL_EXTRACTOR.get(), MineralExtractorScreen::new);
+        MenuScreens.register(JDTEMenus.LARGE_MINERAL_EXTRACTOR.get(), MineralExtractorScreen::new);
+        MenuScreens.register(JDTEMenus.ADVANCED_ENERGY_TRANSMITTER.get(), AdvancedEnergyTransmitterScreen::new);
 
         // Glue Activators
         MenuScreens.register(JDTEMenus.BASIC_GLUE_ACTIVATOR.get(), BasicGlueActivatorScreen::new);
@@ -140,6 +143,9 @@ public class JDTEClientSetup {
         event.registerBlockEntityRenderer(JDTEBlockEntities.ENTITY_SUPPRESSOR.get(), com.jdte.client.renderers.AreaAffectingBER::new);
         event.registerBlockEntityRenderer(JDTEBlockEntities.RANGE_BLOCKER.get(), com.jdte.client.renderers.AreaAffectingBER::new);
         event.registerBlockEntityRenderer(JDTEBlockEntities.FACTORY_PACKER.get(), com.jdte.client.renderers.AreaAffectingBER::new);
+        event.registerBlockEntityRenderer(JDTEBlockEntities.MINERAL_EXTRACTOR.get(), com.jdte.client.renderers.MineralExtractorBER::new);
+        event.registerBlockEntityRenderer(JDTEBlockEntities.LARGE_MINERAL_EXTRACTOR.get(), com.jdte.client.renderers.MineralExtractorBER::new);
+        event.registerBlockEntityRenderer(JDTEBlockEntities.ADVANCED_ENERGY_TRANSMITTER.get(), com.jdte.client.renderers.AdvancedEnergyTransmitterBER::new);
 
         // Glue Activators - 使用AreaAffectingBER渲染区域
         event.registerBlockEntityRenderer(JDTEBlockEntities.BASIC_GLUE_ACTIVATOR.get(), com.jdte.client.renderers.AreaAffectingBER::new);

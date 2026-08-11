@@ -1,6 +1,8 @@
 package com.jdte.common.network;
 
 import com.jdte.JDTE;
+import com.jdte.common.network.data.AdvancedEnergyTransmitterBindingPayload;
+import com.jdte.common.network.data.AdvancedEnergyTransmitterPayload;
 import com.jdte.common.network.data.AutoIoConfigPayload;
 import com.jdte.common.network.data.AutoIoConfigSyncPayload;
 import com.jdte.common.network.data.BioCrusherPayload;
@@ -16,6 +18,8 @@ import com.jdte.common.network.data.LifeBreederModePayload;
 import com.jdte.common.network.data.LifeExtractorPayload;
 import com.jdte.common.network.data.LifeSynthesisRunningPayload;
 import com.jdte.common.network.data.LootFabricatorLootSyncPayload;
+import com.jdte.common.network.data.MineralExtractorOutputPagePayload;
+import com.jdte.common.network.data.MineralSurveyOpenPayload;
 import com.jdte.common.network.data.PotionBrewerFuelInputPayload;
 import com.jdte.common.network.data.PotionBrewerRecipeLockPayload;
 import com.jdte.common.network.data.PotionBrewerRecipeLockSyncPayload;
@@ -28,6 +32,8 @@ import com.jdte.common.network.data.UltimatePortalGunPayload;
 import com.jdte.common.network.data.WrenchAreaAdjustPayload;
 import com.jdte.common.network.data.WrenchAreaAdjustResultPayload;
 import com.jdte.common.network.data.WrenchAreaSelectionPayload;
+import com.jdte.common.network.handler.AdvancedEnergyTransmitterBindingPacket;
+import com.jdte.common.network.handler.AdvancedEnergyTransmitterPacket;
 import com.jdte.common.network.handler.AutoIoConfigPacket;
 import com.jdte.common.network.handler.BioCrusherPacket;
 import com.jdte.common.network.handler.EntitySuppressorPacket;
@@ -42,6 +48,8 @@ import com.jdte.common.network.handler.LifeBreederModePacket;
 import com.jdte.common.network.handler.LifeExtractorPacket;
 import com.jdte.common.network.handler.LifeSynthesisRunningPacket;
 import com.jdte.common.network.handler.LootFabricatorLootSyncPacket;
+import com.jdte.common.network.handler.MineralExtractorOutputPagePacket;
+import com.jdte.common.network.handler.MineralSurveyOpenPacket;
 import com.jdte.common.network.handler.PotionBrewerFuelInputPacket;
 import com.jdte.common.network.handler.PotionBrewerRecipeLockPacket;
 import com.jdte.common.network.handler.RangeBlockerPacket;
@@ -134,6 +142,14 @@ public final class JDTEPacketHandler {
                 LifeBreederModePacket::handle);
         registerClient(LifeSynthesisRunningPayload.class, LifeSynthesisRunningPayload::encode,
                 LifeSynthesisRunningPayload::decode, LifeSynthesisRunningPacket::handle);
+        registerServer(MineralExtractorOutputPagePayload.class, MineralExtractorOutputPagePayload::encode,
+                MineralExtractorOutputPagePayload::decode, MineralExtractorOutputPagePacket::handle);
+        registerClient(MineralSurveyOpenPayload.class, MineralSurveyOpenPayload::encode,
+                MineralSurveyOpenPayload::decode, MineralSurveyOpenPacket::handle);
+        registerServer(AdvancedEnergyTransmitterPayload.class, AdvancedEnergyTransmitterPayload::encode,
+                AdvancedEnergyTransmitterPayload::decode, AdvancedEnergyTransmitterPacket::handle);
+        registerServer(AdvancedEnergyTransmitterBindingPayload.class, AdvancedEnergyTransmitterBindingPayload::encode,
+                AdvancedEnergyTransmitterBindingPayload::decode, AdvancedEnergyTransmitterBindingPacket::handle);
     }
 
     public static void sendToPlayer(ServerPlayer player, Object message) {

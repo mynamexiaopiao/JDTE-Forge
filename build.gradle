@@ -129,6 +129,9 @@ dependencies {
     compileOnly fg.deobf("dev.ftb.mods:ftb-library-forge:${ftb_library_version}")
     compileOnly fg.deobf("appeng:appliedenergistics2-forge:${ae2_version}")
     compileOnly fg.deobf("de.mari_023:ae2wtlib:${ae2wtlib_version}")
+    // Applied Flux is compiled against for the Advanced Energy Transmitter's
+    // ME energy source; the same CurseForge file is also on the runtime path.
+    compileOnly fg.deobf("curse.maven:applied-flux-965012:${applied_flux_file}")
 
     // Server-safe development runtime mods.
     runtimeOnly fg.deobf("curse.maven:jade-324717:${jade_file}")

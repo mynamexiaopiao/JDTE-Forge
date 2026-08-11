@@ -7,6 +7,7 @@ import com.direwolf20.justdirethings.common.capabilities.MachineEnergyStorage;
 import com.direwolf20.justdirethings.common.containers.handlers.FilterBasicHandler;
 import com.jdte.JDTE;
 import com.jdte.common.autoioconfig.AutoIoConfigData;
+import com.jdte.common.blockentities.MineralExtractorBE;
 import com.jdte.common.player.LifeAppleData;
 import com.jdte.common.upgrades.ExtendedUpgradeItemStackHandler;
 import com.jdte.common.upgrades.JDTEFluidTank;
@@ -65,6 +66,9 @@ public final class JDTEAttachments {
             MachineDataProvider provider = new MachineDataProvider(machine);
             event.addCapability(JDTE.id("machine_data"), provider);
             event.addListener(provider::invalidate);
+        }
+        if (net.minecraftforge.fml.ModList.get().isLoaded("ae2")) {
+            com.jdte.common.integrations.ae2.AdvancedEnergyTransmitterAE2Integration.attachCapability(event);
         }
     }
 
@@ -150,8 +154,12 @@ public final class JDTEAttachments {
             energyOptional = machine instanceof PoweredMachineBE powered
                     ? LazyOptional.of(powered::getEnergyStorage) : LazyOptional.empty();
             fluidOptional = machine instanceof FluidMachineBE fluidMachine
-                    ? LazyOptional.of(fluidMachine::getFluidTank) : LazyOptional.empty();
-            itemOptional = LazyOptional.of(machine::getMachineHandler);
+                    ? LazyOptional.of(fluidMachine::getFluidTank)
+                    : machine instanceof MineralExtractorBE extractor
+                            ? LazyOptional.of(extractor::getCombinedFluidHandler) : LazyOptional.empty();
+            itemOptional = machine instanceof MineralExtractorBE extractor
+                    ? LazyOptional.of(extractor::getAutomationItemHandler)
+                    : LazyOptional.of(machine::getMachineHandler);
         }
 
         @Override

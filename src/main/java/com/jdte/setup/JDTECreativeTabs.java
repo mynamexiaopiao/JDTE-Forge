@@ -51,6 +51,10 @@ public class JDTECreativeTabs {
                 output.accept(JDTEItems.ENTITY_SUPPRESSOR.get());
                 output.accept(JDTEItems.RANGE_BLOCKER.get());
                 output.accept(JDTEItems.FACTORY_PACKER.get());
+                output.accept(JDTEItems.MINERAL_SURVEY.get());
+                output.accept(JDTEItems.MINERAL_EXTRACTOR.get());
+                output.accept(JDTEItems.LARGE_MINERAL_EXTRACTOR.get());
+                output.accept(JDTEItems.ADVANCED_ENERGY_TRANSMITTER.get());
 
                 // Glue Activators
                 output.accept(JDTEItems.BASIC_GLUE_ACTIVATOR.get());

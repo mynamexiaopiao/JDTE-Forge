@@ -45,6 +45,12 @@ public class JDTEMenus {
             "range_blocker", () -> IForgeMenuType.create(RangeBlockerContainer::new));
     public static final RegistryObject<MenuType<FactoryPackerContainer>> FACTORY_PACKER = MENUS.register(
             "factory_packer", () -> IForgeMenuType.create(FactoryPackerContainer::new));
+    public static final RegistryObject<MenuType<MineralExtractorContainer>> MINERAL_EXTRACTOR = MENUS.register(
+            "mineral_extractor", () -> IForgeMenuType.create(MineralExtractorContainer::new));
+    public static final RegistryObject<MenuType<LargeMineralExtractorContainer>> LARGE_MINERAL_EXTRACTOR = MENUS.register(
+            "large_mineral_extractor", () -> IForgeMenuType.create(LargeMineralExtractorContainer::new));
+    public static final RegistryObject<MenuType<AdvancedEnergyTransmitterContainer>> ADVANCED_ENERGY_TRANSMITTER = MENUS.register(
+            "advanced_energy_transmitter", () -> IForgeMenuType.create(AdvancedEnergyTransmitterContainer::new));
 
     // Glue Activator
     public static final RegistryObject<MenuType<BasicGlueActivatorContainer>> BASIC_GLUE_ACTIVATOR = MENUS.register(

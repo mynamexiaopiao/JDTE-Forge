@@ -11,11 +11,14 @@ import com.jdte.setup.JDTEItems;
 import com.jdte.setup.JDTEMenus;
 import com.jdte.setup.JDTERecipes;
 import com.jdte.common.commands.JDTECommands;
+import com.jdte.common.blocks.ControllerDropHelper;
 import com.jdte.common.blockentities.AdvancedItemCollectorManager;
 import com.jdte.common.blockentities.EntitySuppressorManager;
 import com.jdte.common.blockentities.ExtendedTimeAccelerationManager;
 import com.jdte.common.blockentities.TimeFreezerManager;
-import com.jdte.common.blockentities.GreenhouseOutputManager;
+import com.jdte.common.blockentities.MachineOutputManager;
+import com.jdte.common.minerals.MineralSourceReloadListener;
+import com.jdte.common.minerals.MineralSurveyIndex;
 import com.jdte.common.blockentities.RangeBlockerManager;
 import com.jdte.common.integrations.JDTEUltimineIntegration;
 import com.jdte.common.integrations.curios.BigFluidTankCuriosIntegration;
@@ -40,6 +43,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.event.OnDatapackSyncEvent;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.network.PacketDistributor;
 
 @Mod(JDTE.MODID)
@@ -72,6 +76,7 @@ public class JDTE {
         MinecraftForge.EVENT_BUS.addListener(LifeAppleProgression::onClone);
         MinecraftForge.EVENT_BUS.addListener(LifeAppleProgression::onLogin);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, AdvancedItemCollectorManager::onBlockBreak);
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, ControllerDropHelper::onBlockBreak);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, AdvancedItemCollectorManager::onEntityJoin);
         MinecraftForge.EVENT_BUS.addListener(AdvancedItemCollectorManager::onServerTick);
         MinecraftForge.EVENT_BUS.addListener(AdvancedItemCollectorManager::onLevelUnload);
@@ -80,9 +85,11 @@ public class JDTE {
         MinecraftForge.EVENT_BUS.addListener(ExtendedTimeAccelerationManager::onServerStopped);
         MinecraftForge.EVENT_BUS.addListener(TimeFreezerManager::onLevelUnload);
         MinecraftForge.EVENT_BUS.addListener(TimeFreezerManager::onServerStopped);
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, GreenhouseOutputManager::onServerTickPost);
-        MinecraftForge.EVENT_BUS.addListener(GreenhouseOutputManager::onLevelUnload);
-        MinecraftForge.EVENT_BUS.addListener(GreenhouseOutputManager::onServerStopped);
+        MinecraftForge.EVENT_BUS.addListener(this::onAddReloadListener);
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, MachineOutputManager::onServerTickPost);
+        MinecraftForge.EVENT_BUS.addListener(MachineOutputManager::onLevelUnload);
+        MinecraftForge.EVENT_BUS.addListener(MachineOutputManager::onServerStopped);
+        MinecraftForge.EVENT_BUS.addListener(this::onServerStopped);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, EntitySuppressorManager::onItemPickup);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, EntitySuppressorManager::onEntityJoin);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, EntitySuppressorManager::onMobSpawnPosition);
@@ -103,7 +110,18 @@ public class JDTE {
         }
     }
 
+    private void onAddReloadListener(AddReloadListenerEvent event) {
+        event.addListener(new MineralSourceReloadListener());
+    }
+
+    private void onServerStopped(net.minecraftforge.event.server.ServerStoppedEvent event) {
+        MineralSurveyIndex.clear(event.getServer());
+    }
+
     private void syncSpawnEggRecipes(OnDatapackSyncEvent event) {
+        if (event.getPlayer() == null) {
+            MineralSurveyIndex.rebuild(event.getPlayerList().getServer());
+        }
         GreenhouseCropResolver.invalidateCaches();
         RecipeCacheSignal.invalidate();
         MobLootSpawnEggHelper.invalidate(event.getPlayerList().getServer().getResourceManager());

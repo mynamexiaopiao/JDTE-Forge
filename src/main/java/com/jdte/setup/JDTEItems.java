@@ -8,6 +8,7 @@ import com.jdte.common.items.ExtendedUpgradeItem;
 import com.jdte.common.items.FactoryPackageItem;
 import com.jdte.common.items.LifeAppleItem;
 import com.jdte.common.items.LootingUpgradeItem;
+import com.jdte.common.items.MineralSurveyItem;
 import com.jdte.common.items.SharpnessUpgradeItem;
 import com.jdte.common.items.UpgradeCardItem;
 import com.jdte.common.items.UltimatePortalGunItem;
@@ -121,9 +122,14 @@ public class JDTEItems {
     public static final RegistryObject<BlockItem> ADVANCED_BIO_CRUSHER = ITEMS.register("advanced_bio_crusher", () -> new BlockItem(JDTEBlocks.ADVANCED_BIO_CRUSHER.get(), new Item.Properties()));
     public static final RegistryObject<BlockItem> EXTENDED_BIO_CRUSHER = ITEMS.register("extended_bio_crusher", () -> new BlockItem(JDTEBlocks.EXTENDED_BIO_CRUSHER.get(), new Item.Properties()));
     public static final RegistryObject<BlockItem> LOOT_FABRICATOR = ITEMS.register("loot_fabricator", () -> new BlockItem(JDTEBlocks.LOOT_FABRICATOR.get(), new Item.Properties()));
+    public static final RegistryObject<BlockItem> MINERAL_EXTRACTOR = ITEMS.register("mineral_extractor", () -> new BlockItem(JDTEBlocks.MINERAL_EXTRACTOR.get(), new Item.Properties()));
+    public static final RegistryObject<BlockItem> LARGE_MINERAL_EXTRACTOR = ITEMS.register("large_mineral_extractor",
+            () -> new BlockItem(JDTEBlocks.LARGE_MINERAL_EXTRACTOR.get(), new Item.Properties()));
+    public static final RegistryObject<BlockItem> ADVANCED_ENERGY_TRANSMITTER = ITEMS.register("advanced_energy_transmitter", () -> new BlockItem(JDTEBlocks.ADVANCED_ENERGY_TRANSMITTER.get(), new Item.Properties()));
 
     // Boss Essences
     public static final RegistryObject<BossEssenceItem> WITHER_ESSENCE = ITEMS.register("wither_essence", BossEssenceItem::new);
+    public static final RegistryObject<MineralSurveyItem> MINERAL_SURVEY = ITEMS.register("mineral_survey", MineralSurveyItem::new);
     public static final RegistryObject<BossEssenceItem> ENDER_DRAGON_ESSENCE = ITEMS.register("ender_dragon_essence", BossEssenceItem::new);
     public static final RegistryObject<BossEssenceItem> ELDER_GUARDIAN_ESSENCE = ITEMS.register("elder_guardian_essence", BossEssenceItem::new);
     public static final RegistryObject<ForgeSpawnEggItem> WITHER_SPAWN_EGG = ITEMS.register(

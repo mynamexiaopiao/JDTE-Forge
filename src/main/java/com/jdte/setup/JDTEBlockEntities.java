@@ -44,6 +44,12 @@ public class JDTEBlockEntities {
             "range_blocker", () -> BlockEntityType.Builder.of(RangeBlockerBE::new, JDTEBlocks.RANGE_BLOCKER.get()).build(null));
     public static final RegistryObject<BlockEntityType<FactoryPackerBE>> FACTORY_PACKER = BLOCK_ENTITIES.register(
             "factory_packer", () -> BlockEntityType.Builder.of(FactoryPackerBE::new, JDTEBlocks.FACTORY_PACKER.get()).build(null));
+    public static final RegistryObject<BlockEntityType<MineralExtractorBE>> MINERAL_EXTRACTOR = BLOCK_ENTITIES.register(
+            "mineral_extractor", () -> BlockEntityType.Builder.of(MineralExtractorBE::new, JDTEBlocks.MINERAL_EXTRACTOR.get()).build(null));
+    public static final RegistryObject<BlockEntityType<LargeMineralExtractorBE>> LARGE_MINERAL_EXTRACTOR = BLOCK_ENTITIES.register(
+            "large_mineral_extractor", () -> BlockEntityType.Builder.of(LargeMineralExtractorBE::new, JDTEBlocks.LARGE_MINERAL_EXTRACTOR.get()).build(null));
+    public static final RegistryObject<BlockEntityType<AdvancedEnergyTransmitterBE>> ADVANCED_ENERGY_TRANSMITTER = BLOCK_ENTITIES.register(
+            "advanced_energy_transmitter", () -> BlockEntityType.Builder.of(AdvancedEnergyTransmitterBE::new, JDTEBlocks.ADVANCED_ENERGY_TRANSMITTER.get()).build(null));
 
     // Glue Activator
     public static final RegistryObject<BlockEntityType<BasicGlueActivatorBE>> BASIC_GLUE_ACTIVATOR = BLOCK_ENTITIES.register(

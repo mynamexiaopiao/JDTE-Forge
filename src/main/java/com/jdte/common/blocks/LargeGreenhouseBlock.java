@@ -18,7 +18,9 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 
@@ -87,5 +89,30 @@ public class LargeGreenhouseBlock extends JDTEMachineBlock {
     @Override
     public boolean isValidBE(BlockEntity blockEntity) {
         return blockEntity instanceof LargeGreenhouseBE;
+    }
+
+    @Override
+    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player,
+                                       boolean willHarvest, FluidState fluid) {
+        boolean preDropped = ControllerDropHelper.hasPending(pos);
+        if (!preDropped) ControllerDropHelper.clearPending();
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        ItemStack tool = player.getMainHandItem().copy();
+        boolean removed = super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+        if (removed && !preDropped) {
+            ControllerDropHelper.dropFromPlayerBreak(state, level, pos, blockEntity, player, tool);
+        }
+        return removed;
+    }
+
+    @Override
+    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state,
+                              BlockEntity blockEntity, ItemStack tool) {
+        if (ControllerDropHelper.consumePending(pos)) {
+            player.awardStat(Stats.BLOCK_MINED.get(this));
+            player.causeFoodExhaustion(0.005F);
+            return;
+        }
+        super.playerDestroy(level, player, pos, state, blockEntity, tool);
     }
 }

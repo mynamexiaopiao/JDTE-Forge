@@ -8,6 +8,9 @@ public final class SpawnEggRecipeSyncPacket {
     }
 
     public static void handle(SpawnEggRecipeSyncPayload payload, PacketContext context) {
+        if (net.minecraftforge.api.distmarker.Dist.CLIENT != net.minecraftforge.fml.loading.FMLEnvironment.dist) {
+            return;
+        }
         context.enqueueWork(() -> com.jdte.client.SpawnEggRecipeClientCache.set(payload.recipes()));
     }
 }
